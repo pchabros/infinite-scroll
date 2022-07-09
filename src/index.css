@@ -1,7 +1,5 @@
 body {
-  font-family: monospace;
-  font-weight: 300;
-  font-size: 12px;
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

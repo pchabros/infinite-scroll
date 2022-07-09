@@ -3,17 +3,18 @@ import { useEffect, useState } from "react";
 
 interface useFetchPageParams<T> {
   url: string;
-  search: string;
+  params: { [key: string]: string };
   shouldFetch: boolean;
   preprocess: (results: T) => T;
 }
 
 const useFetchPage = <T>({
   url,
-  search,
+  params,
   shouldFetch,
   preprocess,
 }: useFetchPageParams<T>) => {
+  const paramsString = JSON.stringify(params);
   const [data, setData] = useState<T[]>([]);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
@@ -23,7 +24,7 @@ const useFetchPage = <T>({
     axios({
       method: "GET",
       url: url,
-      params: { name: search, page: page },
+      params: { page, ...JSON.parse(paramsString) },
       signal: abortController.signal,
     })
       .then(({ data: { results, info } }) => {
@@ -36,7 +37,7 @@ const useFetchPage = <T>({
         if (axios.isCancel(error)) return;
       });
     return () => abortController.abort();
-  }, [url, page, search, preprocess]);
+  }, [url, page, paramsString, preprocess]);
 
   useEffect(() => {
     if (hasNextPage && shouldFetch) setPage((prev) => prev + 1);
@@ -46,7 +47,7 @@ const useFetchPage = <T>({
   useEffect(() => {
     setData([]);
     setPage(1);
-  }, [search]);
+  }, [paramsString]);
 
   return data;
 };
