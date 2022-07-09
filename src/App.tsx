@@ -5,6 +5,8 @@ import {
   Radio,
   RadioGroup,
   Input,
+  useMediaQuery,
+  FormControlLabelProps,
 } from "@mui/material";
 import CharacterCard from "./components/CharacterCard";
 import InfiniteList from "./components/InfiniteList";
@@ -46,18 +48,29 @@ function App() {
     preprocess: pickValues,
   });
 
+  const isPhone = useMediaQuery("(max-width: 500px)");
+  const radioLabelPlacement = (
+    isPhone ? "bottom" : "start"
+  ) as FormControlLabelProps["labelPlacement"];
+
   return (
     <>
       <AppBar
         component="nav"
         position="sticky"
         color="default"
-        sx={{ flexDirection: "row", paddingX: 3, paddingY: 2 }}
+        sx={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          paddingX: 3,
+          paddingY: 2,
+        }}
       >
         <Input
           onChange={handleSearch}
           placeholder="Search"
-          sx={{ flexGrow: 1, marginRight: 3 }}
+          sx={{ flexGrow: 1, marginRight: 3, marginBottom: isPhone ? 2 : 0 }}
         />
         <RadioGroup value={status} onChange={handleStatus} row color="inherit">
           {statuses.map((status) => (
@@ -66,6 +79,7 @@ function App() {
               control={<Radio />}
               value={status}
               label={status ? status : "any"}
+              labelPlacement={radioLabelPlacement}
             />
           ))}
         </RadioGroup>
