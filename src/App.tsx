@@ -1,32 +1,42 @@
-import axios from "axios";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import InfiniteList from "./components/InfiniteList";
-import CharacterCard from "./components/CharacterCard";
 import { Input } from "@mui/material";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import CharacterCard from "./components/CharacterCard";
+import InfiniteList from "./components/InfiniteList";
+import useFetch from "./hooks/use-fetch";
+import useScrollEnd from "./hooks/use-scroll-end";
+
+type CharacterData = {
+  id: number;
+  name: string;
+  image: string;
+};
 
 function App() {
+  const [data, setData] = useState<CharacterData[]>([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [data, setData] = useState([{ id: 0, name: "", image: "" }]);
+  const handleResults = useCallback((results: CharacterData[]) => {
+    const preprocessedResults = results.map((d) => ({
+      id: d.id,
+      name: d.name,
+      image: d.image,
+    }));
+    setData((prev) => [...prev, ...preprocessedResults]);
+  }, []);
   const handleSearch = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setData([]);
+    setPage(1);
     setSearch(event.target.value);
   }, []);
+  const isScrollEnd = useScrollEnd();
+  const hasNextPage = useFetch<CharacterData>({
+    search,
+    page,
+    handleResults,
+  });
   useEffect(() => {
-    const abortController = new AbortController();
-    axios({
-      method: "GET",
-      url: "https://rickandmortyapi.com/api/character",
-      params: { name: search, page: page },
-      signal: abortController.signal,
-    })
-      .then((result) => {
-        setData(result.data.results);
-      })
-      .catch((error) => {
-        if (axios.isCancel(error)) return;
-      });
-    return () => abortController.abort();
-  }, [page, search]);
+    if (hasNextPage && isScrollEnd) setPage((prev) => prev + 1);
+  }, [hasNextPage, isScrollEnd]);
   return (
     <>
       <Input onChange={handleSearch} />
