@@ -1,8 +1,8 @@
 import { Input } from "@mui/material";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useState } from "react";
 import CharacterCard from "./components/CharacterCard";
 import InfiniteList from "./components/InfiniteList";
-import useFetch from "./hooks/use-fetch";
+import useFetchPage from "./hooks/use-fetch-page";
 import useScrollEnd from "./hooks/use-scroll-end";
 
 type CharacterData = {
@@ -12,31 +12,27 @@ type CharacterData = {
 };
 
 function App() {
-  const [data, setData] = useState<CharacterData[]>([]);
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const handleResults = useCallback((results: CharacterData[]) => {
-    const preprocessedResults = results.map((d) => ({
-      id: d.id,
-      name: d.name,
-      image: d.image,
-    }));
-    setData((prev) => [...prev, ...preprocessedResults]);
-  }, []);
+  const preprocess = useCallback(
+    (item: CharacterData) => ({
+      id: item.id,
+      name: item.name,
+      image: item.image,
+    }),
+    []
+  );
   const handleSearch = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setData([]);
-    setPage(1);
     setSearch(event.target.value);
   }, []);
+
   const isScrollEnd = useScrollEnd();
-  const hasNextPage = useFetch<CharacterData>({
+  const data = useFetchPage<CharacterData>({
+    url: "https://rickandmortyapi.com/api/character",
     search,
-    page,
-    handleResults,
+    shouldFetch: isScrollEnd,
+    preprocess,
   });
-  useEffect(() => {
-    if (hasNextPage && isScrollEnd) setPage((prev) => prev + 1);
-  }, [hasNextPage, isScrollEnd]);
+
   return (
     <>
       <Input onChange={handleSearch} />
