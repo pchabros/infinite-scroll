@@ -1,13 +1,5 @@
 import { ChangeEvent, useCallback, useState } from "react";
-import {
-  AppBar,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  Input,
-  useMediaQuery,
-  FormControlLabelProps,
-} from "@mui/material";
+import Filters from "./components/Filters";
 import CharacterCard from "./components/CharacterCard";
 import InfiniteList from "./components/InfiniteList";
 import useFetchPage from "./hooks/use-fetch-page";
@@ -15,11 +7,8 @@ import useScrollEnd from "./hooks/use-scroll-end";
 import { CharacterStatus, CharacterData } from "./types";
 
 function App() {
-  // There's no "any" option in API for status.
-  // Empty string used to query characters with any status.
-  const statuses: CharacterStatus[] = ["", "alive", "dead", "unknown"];
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<CharacterStatus>("");
   const pickValues = useCallback(
     (item: CharacterData) => ({
       id: item.id,
@@ -32,7 +21,7 @@ function App() {
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };
-  const handleStatus = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value as CharacterStatus;
     setStatus(value);
   };
@@ -48,42 +37,13 @@ function App() {
     preprocess: pickValues,
   });
 
-  const isPhone = useMediaQuery("(max-width: 500px)");
-  const radioLabelPlacement = (
-    isPhone ? "bottom" : "start"
-  ) as FormControlLabelProps["labelPlacement"];
-
   return (
     <>
-      <AppBar
-        component="nav"
-        position="sticky"
-        color="default"
-        sx={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          paddingX: 3,
-          paddingY: 2,
-        }}
-      >
-        <Input
-          onChange={handleSearch}
-          placeholder="Search"
-          sx={{ flexGrow: 1, marginRight: 3, marginBottom: isPhone ? 2 : 0 }}
-        />
-        <RadioGroup value={status} onChange={handleStatus} row color="inherit">
-          {statuses.map((status) => (
-            <FormControlLabel
-              key={status}
-              control={<Radio />}
-              value={status}
-              label={status ? status : "any"}
-              labelPlacement={radioLabelPlacement}
-            />
-          ))}
-        </RadioGroup>
-      </AppBar>
+      <Filters
+        status={status}
+        onSearch={handleSearch}
+        onStatusChange={handleStatusChange}
+      />
       <InfiniteList
         data={data}
         renderItem={({ id, name, image }) => (
