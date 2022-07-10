@@ -16,6 +16,7 @@ const useFetchPage = <T>({
 }: useFetchPageParams<T>) => {
   const paramsString = JSON.stringify(params);
   const [data, setData] = useState<T[]>([]);
+  const [error, setError] = useState<string | null>();
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
 
@@ -28,6 +29,7 @@ const useFetchPage = <T>({
       signal: abortController.signal,
     })
       .then(({ data: { results, info } }) => {
+        setError(null);
         const nextPage = info.next;
         setHasNextPage(!!nextPage);
         const preprocessedResults = results.map(preprocess);
@@ -35,6 +37,7 @@ const useFetchPage = <T>({
       })
       .catch((error) => {
         if (axios.isCancel(error)) return;
+        setError(error.response.data.error);
       });
     return () => abortController.abort();
   }, [url, page, paramsString, preprocess]);
@@ -49,7 +52,7 @@ const useFetchPage = <T>({
     setPage(1);
   }, [paramsString]);
 
-  return data;
+  return { data, error };
 };
 
 export default useFetchPage;

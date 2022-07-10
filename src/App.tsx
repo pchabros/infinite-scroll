@@ -1,6 +1,7 @@
 import { ChangeEvent, useCallback, useState } from "react";
 import Filters from "./components/Filters";
 import CharacterCard from "./components/CharacterCard";
+import ErrorMessage from "./components/ErrorMessage";
 import InfiniteList from "./components/InfiniteList";
 import useFetchPage from "./hooks/use-fetch-page";
 import useScrollEnd from "./hooks/use-scroll-end";
@@ -27,7 +28,7 @@ function App() {
   };
 
   const isScrollEnd = useScrollEnd();
-  const data = useFetchPage<CharacterData>({
+  const { data, error } = useFetchPage<CharacterData>({
     url: "https://rickandmortyapi.com/api/character",
     params: {
       name: search,
@@ -44,12 +45,16 @@ function App() {
         onSearch={handleSearch}
         onStatusChange={handleStatusChange}
       />
-      <InfiniteList
-        data={data}
-        renderItem={({ id, name, image }) => (
-          <CharacterCard key={id} name={name} image={image} />
-        )}
-      />
+      {error ? (
+        <ErrorMessage error={error} />
+      ) : (
+        <InfiniteList
+          data={data}
+          renderItem={({ id, name, image }) => (
+            <CharacterCard key={id} name={name} image={image} />
+          )}
+        />
+      )}
     </>
   );
 }
