@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-const useScrollEnd = () => {
+const useScrollEnd = (margin = 300) => {
   const [isScrollEnd, setIsScrollEnd] = useState(false);
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const { innerHeight } = window;
     const { scrollTop, offsetHeight } = document.documentElement;
-    setIsScrollEnd(innerHeight + scrollTop === offsetHeight);
-  };
+    setIsScrollEnd(innerHeight + scrollTop > offsetHeight - margin);
+  }, [margin]);
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [handleScroll]);
   return isScrollEnd;
 };
 
