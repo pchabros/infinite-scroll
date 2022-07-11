@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
+// Margin added to make scroll smooth (especially on mobile)
 const useScrollEnd = (margin = 300) => {
   const [isScrollEnd, setIsScrollEnd] = useState(false);
   const handleScroll = useCallback(() => {

@@ -1,11 +1,11 @@
-import React, { ChangeEvent, useState } from "react";
-import Filters from "./components/Filters";
+import { ChangeEvent, useEffect, useState } from "react";
 import CharacterCard from "./components/CharacterCard";
 import ErrorMessage from "./components/ErrorMessage";
+import Filters from "./components/Filters";
 import InfiniteList from "./components/InfiniteList";
 import useFetchPage from "./hooks/use-fetch-page";
 import useScrollEnd from "./hooks/use-scroll-end";
-import { CharacterStatus, CharacterData } from "./types";
+import { CharacterData, CharacterStatus } from "./types";
 
 const pickValues = (item: CharacterData) => ({
   id: item.id,
@@ -26,7 +26,7 @@ function App() {
   };
 
   const isScrollEnd = useScrollEnd();
-  const { data, error } = useFetchPage<CharacterData>({
+  const { data, error, resetted } = useFetchPage<CharacterData>({
     url: "https://rickandmortyapi.com/api/character",
     params: {
       name: search,
@@ -35,6 +35,11 @@ function App() {
     shouldFetch: isScrollEnd,
     preprocess: pickValues,
   });
+
+  // Scroll back to top if filters has changed
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [resetted]);
 
   return (
     <>

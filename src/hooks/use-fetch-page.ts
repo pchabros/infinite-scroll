@@ -17,8 +17,9 @@ const useFetchPage = <T>({
 }: useFetchPageParams<T>) => {
   const [data, setData] = useState<T[]>([]);
   const [error, setError] = useState<string | null>();
-  const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [page, setPage] = useState(1);
+  const [resetted, setResetted] = useState(false);
   const paramsRef = useRef(params);
   const pageRef = useRef(page);
 
@@ -31,6 +32,7 @@ const useFetchPage = <T>({
     // so data and page should be resetted.
     // `page !== 1` used to exclude case when page is resetted.
     const pageChanged = pageRef.current !== page && page !== 1;
+    setResetted(!pageChanged);
     if (!pageChanged) {
       setPage(1);
     } else {
@@ -59,13 +61,17 @@ const useFetchPage = <T>({
         setError(error.response.data.error);
       });
     return () => abortController.abort();
+    // `params` object passed to dependency array triggers
+    // `useEffect` constantly therefore `useRef` used.
+    // I didn't want to pass `name` and `status` separately
+    // so that hook is more generic.
   }, [url, page, paramsRef.current]);
 
   useEffect(() => {
     if (hasNextPage && shouldFetch) setPage((prev) => prev + 1);
   }, [hasNextPage, shouldFetch]);
 
-  return { data, error };
+  return { data, error, resetted };
 };
 
 export default useFetchPage;
