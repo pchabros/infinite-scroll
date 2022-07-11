@@ -5,6 +5,7 @@ type CharacterData = {
   name: string;
   status: CharacterStatus;
   image: string;
+  page?: number;
 };
 
 export { CharacterStatus, CharacterData };

@@ -6,7 +6,7 @@ interface useFetchPageParams<T> {
   url: string;
   params: { [key: string]: string };
   shouldFetch: boolean;
-  preprocess: (results: T) => T;
+  preprocess: (item: T) => T;
 }
 
 const useFetchPage = <T>({

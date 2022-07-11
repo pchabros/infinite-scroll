@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import Filters from "./components/Filters";
 import CharacterCard from "./components/CharacterCard";
 import ErrorMessage from "./components/ErrorMessage";
@@ -7,18 +7,16 @@ import useFetchPage from "./hooks/use-fetch-page";
 import useScrollEnd from "./hooks/use-scroll-end";
 import { CharacterStatus, CharacterData } from "./types";
 
+const pickValues = (item: CharacterData) => ({
+  id: item.id,
+  name: item.name,
+  status: item.status,
+  image: item.image,
+});
+
 function App() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<CharacterStatus>("");
-  const pickValues = useCallback(
-    (item: CharacterData) => ({
-      id: item.id,
-      name: item.name,
-      status: item.status,
-      image: item.image,
-    }),
-    []
-  );
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
   };

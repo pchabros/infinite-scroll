@@ -1,5 +1,5 @@
+import React, { FC } from "react";
 import { Alert } from "@mui/material";
-import { FC } from "react";
 
 interface ErrorMessageProps {
   error: string;

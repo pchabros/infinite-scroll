@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { CardContent, CardMedia, Paper } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
