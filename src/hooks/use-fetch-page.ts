@@ -21,7 +21,7 @@ const useFetchPage = <T>({
   const [page, setPage] = useState(1);
   const [resetted, setResetted] = useState(false);
   const paramsRef = useRef(params);
-  const pageRef = useRef(page);
+  const prevPageRef = useRef(page);
 
   if (!objectsEqual(paramsRef.current, params)) {
     paramsRef.current = params;
@@ -31,12 +31,13 @@ const useFetchPage = <T>({
     // If page didn't change, url or params changed
     // so data and page should be resetted.
     // `page !== 1` used to exclude case when page is resetted.
-    const pageChanged = pageRef.current !== page && page !== 1;
+    const pageChanged = page > prevPageRef.current;
     setResetted(!pageChanged);
     if (!pageChanged) {
       setPage(1);
+      prevPageRef.current = 1;
     } else {
-      pageRef.current = page;
+      prevPageRef.current = page;
     }
     const abortController = new AbortController();
     axios({

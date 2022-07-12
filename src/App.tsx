@@ -38,7 +38,7 @@ function App() {
 
   // Scroll back to top if filters has changed
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    if (resetted) window.scrollTo({ top: 0 });
   }, [resetted]);
 
   return (
