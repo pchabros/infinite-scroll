@@ -9,7 +9,7 @@ interface CharacterCardProps {
 
 const CharacterCard: FC<CharacterCardProps> = ({ name, image }) => {
   return (
-    <Paper sx={{ width: 200, margin: 2 }} elevation={5}>
+    <Paper sx={{ width: 200, margin: 3 }} elevation={5}>
       <CardMedia
         component={"img"}
         height="200"

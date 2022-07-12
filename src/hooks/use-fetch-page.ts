@@ -65,6 +65,7 @@ const useFetchPage = <T>({
     // `useEffect` constantly therefore `useRef` used.
     // I didn't want to pass `name` and `status` separately
     // so that hook is more generic.
+    // eslint-disable-next-line
   }, [url, page, paramsRef.current]);
 
   useEffect(() => {
