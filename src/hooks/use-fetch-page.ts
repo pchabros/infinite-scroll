@@ -30,7 +30,6 @@ const useFetchPage = <T>({
   useEffect(() => {
     // If page didn't change, url or params changed
     // so data and page should be resetted.
-    // `page !== 1` used to exclude case when page is resetted.
     const pageChanged = page > prevPageRef.current;
     setResetted(!pageChanged);
     if (!pageChanged) {
